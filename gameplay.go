@@ -24,7 +24,5 @@ func (n *NoGamePlay) AcceptPlayer(_ string, _ uuid.UUID, _ *user.PublicKey, _ []
 	conn.WritePacket(pk.Marshal(
 		packetid.ClientboundDisconnect, chat.Text("login complete")))
 
-	time.Sleep(time.Second)
-
 	successLogins.With(prometheus.Labels{"protocol": string(protocol)}).Inc()
 }
