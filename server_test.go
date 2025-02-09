@@ -14,7 +14,7 @@ func TestMain(m *testing.M) {
 	flag.Set("online", "false")
 	go main()
 
-	time.Sleep(1 * time.Second)
+	time.Sleep(2 * time.Second)
 
 	os.Exit(m.Run())
 }
@@ -32,13 +32,15 @@ func TestEmptyPingInfo(t *testing.T) {
 
 func TestServerConnection(t *testing.T) {
 	c := bot.NewClient()
-	c.JoinServer(":25565")
+	err := c.JoinServer(":25565")
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 
 	go func() {
 		c.HandleGame()
-
 		cancel()
 	}()
 
