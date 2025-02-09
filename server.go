@@ -4,11 +4,14 @@ import (
 	"flag"
 	"github.com/Tnze/go-mc/registry"
 	"github.com/Tnze/go-mc/server"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/zap"
+	"net/http"
 	"runtime/debug"
 )
 
 var isDebug = flag.Bool("debug", true, "Enable debug log output")
+var isOnline = flag.Bool("online", true, "Enable online-mode")
 
 func main() {
 	flag.Parse()
@@ -38,8 +41,8 @@ func main() {
 			*EmptyPingInfo
 		}{emptyList, emptyPing},
 		LoginHandler: &server.MojangLoginHandler{
-			OnlineMode:           true,
-			EnforceSecureProfile: true,
+			OnlineMode:           *isOnline,
+			EnforceSecureProfile: *isOnline,
 			Threshold:            0, // compress all packets
 			LoginChecker:         emptyList,
 		},
@@ -47,11 +50,20 @@ func main() {
 		GamePlay:      &NoGamePlay{},
 	}
 
+	go startPrometheus(logger)
+
 	logger.Info("Server listening on :25565")
 	err := s.Listen(":25565")
 	if err != nil {
 		logger.Fatal("Server listening error", zap.Error(err))
 	}
+}
+
+func startPrometheus(logger *zap.Logger) {
+	logger.Info("Starting prometheus metrics server on :9100")
+
+	http.Handle("/metrics", promhttp.Handler())
+	http.ListenAndServe(":9100", nil)
 }
 
 // printBuildInfo reading compile information of the binary program with runtime/debug package，and print it to log
