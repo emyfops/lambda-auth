@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
+	"time"
 )
 
 var successLogins = promauto.NewCounterVec(prometheus.CounterOpts{
@@ -22,6 +23,8 @@ type NoGamePlay struct{}
 func (n *NoGamePlay) AcceptPlayer(_ string, _ uuid.UUID, _ *user.PublicKey, _ []user.Property, protocol int32, conn *net.Conn) {
 	conn.WritePacket(pk.Marshal(
 		packetid.ClientboundDisconnect, chat.Text("login complete")))
+
+	time.Sleep(time.Second)
 
 	successLogins.With(prometheus.Labels{"protocol": string(protocol)}).Inc()
 }
