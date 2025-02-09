@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
-	"time"
 )
 
 var successLogins = promauto.NewCounterVec(prometheus.CounterOpts{
