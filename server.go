@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"github.com/Tnze/go-mc/registry"
 	"github.com/Tnze/go-mc/server"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/zap"
@@ -46,7 +45,7 @@ func main() {
 			Threshold:            0, // compress all packets
 			LoginChecker:         emptyList,
 		},
-		ConfigHandler: &server.Configurations{Registries: registry.NewNetworkCodec()},
+		ConfigHandler: &EmptyConfig{},
 		GamePlay:      &NoGamePlay{},
 	}
 
