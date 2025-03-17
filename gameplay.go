@@ -9,8 +9,8 @@ import (
 	"strconv"
 )
 
-var successLogins = promauto.NewCounterVec(prometheus.CounterOpts{
-	Name: "server_processed_logins_total",
+var successfulLogins = promauto.NewCounterVec(prometheus.CounterOpts{
+	Name: "lambda_authentication_processed_logins_total",
 	Help: "The total number of successful connections",
 }, []string{"protocol"})
 
@@ -18,5 +18,5 @@ type NoGamePlay struct{}
 
 // AcceptPlayer Disconnect the player and stop the player handling
 func (n *NoGamePlay) AcceptPlayer(_ string, _ uuid.UUID, _ *user.PublicKey, _ []user.Property, protocol int32, conn *net.Conn) {
-	successLogins.With(prometheus.Labels{"protocol": strconv.Itoa(int(protocol))}).Inc()
+	successfulLogins.With(prometheus.Labels{"protocol": strconv.Itoa(int(protocol))}).Inc()
 }
