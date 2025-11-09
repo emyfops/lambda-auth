@@ -18,7 +18,7 @@ load_rc_config $name
 : ${authd_flags=""}
 : ${authd_logdir="/var/log/${name}"}
 : ${authd_logfile="${authd_logdir}/${name}.log"}
-: ${authd:="root"}
+: ${authd_user:="root"}
 : ${authd_group:="wheel"}
 
 command="${authd_command}"
@@ -40,15 +40,33 @@ authd_precmd()
   fi
 }
 
-authd_start()
-{
-  /usr/bin/su -m "${authd_user}" -c "${authd_command} ${authd_flags}" >> ${authd_logfile} 2>&1
-  if [ $? -eq 0 ] && ps -ax -o pid | grep -q "$(cat ${pidfile})"; then
-    echo "Done"
+authd_start() {
+  /usr/bin/su -m "${authd_user}" -c "${authd_command} ${authd_flags} &"
+  sleep 1
+  pid=$(pgrep -f "${authd_command}")
+  if [ -n "$pid" ]; then
+    echo $pid > ${pidfile}
+    echo "pid: $pid"
     echo "Log: ${authd_logfile}"
   else
     echo "Error: authd failed to start"
     echo "Check the log: ${authd_logfile}"
+    return 1
+  fi
+}
+
+# Stop the daemon
+authd_stop() {
+  if [ -f ${pidfile} ]; then
+    pid=$(cat ${pidfile})
+    if kill -TERM $pid; then
+      echo "authd stopped successfully"
+      rm -f ${pidfile}
+    else
+      echo "unable to stop authd"
+    fi
+  else
+    echo "pid file not found, is authd running?"
   fi
 }
 
