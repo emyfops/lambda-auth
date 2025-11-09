@@ -55,7 +55,6 @@ authd_start() {
   fi
 }
 
-# Stop the daemon
 authd_stop() {
   if [ -f ${pidfile} ]; then
     pid=$(cat ${pidfile})
