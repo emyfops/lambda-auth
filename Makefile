@@ -1,0 +1,25 @@
+OUT=lambda-auth
+GO=$(shell which go)
+GOFMT=$(shell which gofmt)
+
+all: build
+
+install: install-rc
+	$(GO) install .
+
+install-rc:
+	@echo "Installing rc.d script..."
+	@cp ./authd /usr/local/etc/rc.d/authd
+	@chmod +x /usr/local/etc/rc.d/authd
+	@echo "The rc.d script has been installed successfully."
+
+build: fmt
+	GOOS=freebsd GOARCH=amd64 $(GO) build -o $(OUT) .
+
+run: build
+	./$(BINARY_NAME)
+
+fmt:
+	$(GOFMT) -s -w .
+
+.PHONY: all build run fmt install install-rc

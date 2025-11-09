@@ -1,0 +1,55 @@
+# #!/bin/sh
+#
+# PROVIDE: authd
+# REQUIRE: NETWORKING
+# BEFORE:  LOGIN
+# KEYWORD: shutdown
+
+. /etc/rc.subr
+
+name=authd
+rcvar=authd_enable
+desc="Minimal server implementation for retrieving secret keys client-side."
+
+load_rc_config $name
+
+: ${authd_enable:=NO}
+: ${authd_command="/usr/local/bin/${name}"}
+: ${authd_flags=""}
+: ${authd_logdir="/var/log/${name}"}
+: ${authd_logfile="${authd_logdir}/${name}.log"}
+: ${authd:="root"}
+: ${authd_group:="wheel"}
+
+command="${authd_command}"
+pidfile="/var/run/${name}/${name}.pid"
+
+start_precmd="authd_precmd"
+start_cmd="authd_start"
+
+
+authd_precmd()
+{
+  /usr/bin/install -d -m 755 -o "${authd_user}" -g "${authd_group}" ${authd_logdir}
+  /usr/bin/install -d -m 700 -o "${authd_user}" -g "${authd_group}" /var/run/authd
+  if [ -e ${authd_logfile} ]; then
+    /bin/chmod 644 ${authd_logfile}
+    /usr/sbin/chown "${authd_user}:${authd_group}" ${authd_logfile}
+  else
+    /usr/bin/install -m 644 -o "${authd_user}" -g "${authd_group}" /dev/null ${authd_logfile}
+  fi
+}
+
+authd_start()
+{
+  /usr/bin/su -m "${authd_user}" -c "${authd_command} ${authd_flags}" >> ${authd_logfile} 2>&1
+  if [ $? -eq 0 ] && ps -ax -o pid | grep -q "$(cat ${pidfile})"; then
+    echo "Done"
+    echo "Log: ${authd_logfile}"
+  else
+    echo "Error: authd failed to start"
+    echo "Check the log: ${authd_logfile}"
+  fi
+}
+
+run_rc_command "$1"
