@@ -1,4 +1,4 @@
-OUT=authd
+OUT=app
 GO=$(shell which go)
 GOFMT=$(shell which gofmt)
 
@@ -6,8 +6,8 @@ all: build
 
 install: install-rc
 	$(GO) install .
-	@mv $(OUT) /usr/local/bin/$(OUT)
-	echo "The binary has been installed to /usr/local/bin/$(OUT)"
+	@mv $(OUT) /usr/local/bin/authd
+	echo "The binary has been installed to /usr/local/bin/authd"
 
 install-rc:
 	@echo "Installing rc.d script..."
