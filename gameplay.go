@@ -1,12 +1,13 @@
 package main
 
 import (
+	"strconv"
+
 	"github.com/Tnze/go-mc/net"
 	"github.com/Tnze/go-mc/yggdrasil/user"
 	"github.com/google/uuid"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
-	"strconv"
 )
 
 var successfulLogins = promauto.NewCounterVec(prometheus.CounterOpts{

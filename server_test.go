@@ -3,11 +3,12 @@ package main
 import (
 	"context"
 	"flag"
-	"github.com/Tnze/go-mc/bot"
 	"log"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/Tnze/go-mc/bot"
 )
 
 func TestMain(m *testing.M) {

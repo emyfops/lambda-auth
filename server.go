@@ -2,20 +2,26 @@ package main
 
 import (
 	"flag"
+	"fmt"
+	"net/http"
+	"runtime/debug"
+
 	"github.com/Tnze/go-mc/registry"
 	"github.com/Tnze/go-mc/server"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/zap"
-	"net/http"
-	"runtime/debug"
 )
 
-var isDebug = flag.Bool("debug", true, "Enable debug log output")
-var isOnline = flag.Bool("online", true, "Enable online-mode")
+var (
+	isOnline = flag.Bool("online", true, "Enable online-mode")
+	isDebug  = flag.Bool("debug", true, "Enable debug log output")
+	port     = flag.Int("port", 8080, "Server port")
+	promPort = flag.Int("prom_port", 0, "Prometheus port")
+)
 
 func main() {
 	flag.Parse()
-	// initialize log library
+
 	var logger *zap.Logger
 	if *isDebug {
 		logger = unwrap(zap.NewDevelopment())
@@ -52,21 +58,20 @@ func main() {
 
 	go startPrometheus(logger)
 
-	logger.Info("Server listening on :25565")
-	err := s.Listen(":25565")
+	logger.Info("Server started", zap.Int("port", *port))
+	err := s.Listen(fmt.Sprintf(":%d", *port))
 	if err != nil {
 		logger.Fatal("Server listening error", zap.Error(err))
 	}
 }
 
 func startPrometheus(logger *zap.Logger) {
-	logger.Info("Starting prometheus metrics server on :9100")
+	logger.Info("Starting prometheus metrics server", zap.Int("port", *promPort))
 
 	http.Handle("/metrics", promhttp.Handler())
-	http.ListenAndServe(":9100", nil)
+	http.ListenAndServe(fmt.Sprintf(":%d", *promPort), nil)
 }
 
-// printBuildInfo reading compile information of the binary program with runtime/debug package，and print it to log
 func printBuildInfo(logger *zap.Logger) {
 	binaryInfo, _ := debug.ReadBuildInfo()
 	settings := make(map[string]string)
