@@ -15,7 +15,7 @@ load_rc_config $name
 
 : ${authd_enable:=NO}
 : ${authd_command="/usr/local/bin/${name}"}
-: ${authd_flags="--online=true --debug=true --port=8090 --prom_port=11900"}
+: ${authd_flags="--online=true --debug=true --port=25565 --prom_port=11900"}
 : ${authd_logdir="/var/log/${name}"}
 : ${authd_logfile="${authd_logdir}/${name}.log"}
 : ${authd_user:="root"}
