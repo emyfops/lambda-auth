@@ -41,7 +41,7 @@ authd_precmd()
 }
 
 authd_start() {
-  /usr/bin/su -m "${authd_user}" -c "${authd_command} ${authd_flags} &"
+  /usr/bin/su -m "${authd_user}" -c "${authd_command} ${authd_flags} >> ${authd_logfile} 2>&1 &"
   sleep 1
   pid=$(pgrep -f "${authd_command}")
   if [ -n "$pid" ]; then
