@@ -15,8 +15,8 @@ import (
 var (
 	isOnline = flag.Bool("online", true, "Enable online-mode")
 	isDebug  = flag.Bool("debug", true, "Enable debug log output")
-	port     = flag.Int("port", 8080, "Server port")
-	promPort = flag.Int("prom_port", 0, "Prometheus port")
+	port     = flag.Int("port", 25565, "Server port")
+	promPort = flag.Int("prom_port", 11900, "Prometheus port")
 )
 
 func main() {
